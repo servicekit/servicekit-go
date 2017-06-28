@@ -36,7 +36,7 @@ golang.
 
 * grpc load balance
 
-   grpc load balance is implemented by https://github.com/grpc/grpc/blob/master/doc/load-balancing.md
+   grpc load balance was implemented by https://github.com/grpc/grpc/blob/master/doc/load-balancing.md
    ```
 	co, err := coordinator.NewConsul("127.0.0.1:8500", "http", "", log)
 	if err != nil {
