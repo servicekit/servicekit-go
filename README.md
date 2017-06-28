@@ -9,7 +9,9 @@ golang.
 ## Quick Start
 
 * get library
+  ```
   go get github.com/servicekit/servicekit-go              (>=go1.8)
+  ```
 
 * coordinator service
    ```
