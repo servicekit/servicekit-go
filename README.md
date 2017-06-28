@@ -60,4 +60,3 @@ golang.
 	 i := invoker.NewFailoverInvoker(10, time.Second, invoker.NewFibDelay(time.Second))
 	 err := i.Invoke(context.Background(), conn, "/Account/Auth", authRequest, authResponse)
 	 ...
-```
