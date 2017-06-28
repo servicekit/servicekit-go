@@ -1,6 +1,6 @@
 # servicekit for golang
 
-[![Travis CI Status](https://travis-ci.org/servicekit/fabio.svg?branch=master)](https://travis-ci.org/servicekit/servicekit-go)
+[![Travis CI Status](https://travis-ci.org/servicekit/servicekit-go.svg?branch=master)](https://travis-ci.org/servicekit/servicekit-go)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/fabiolb/fabio/master/LICENSE)
 
 servicekit is a simple, minimum viable service management library for
