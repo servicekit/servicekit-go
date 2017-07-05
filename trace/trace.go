@@ -1,58 +1,61 @@
 package trace
 
 import (
-	"net/http"
+    "net/http"
 
-	"github.com/servicekit/servicekit-go/logger"
+    "github.com/servicekit/servicekit-go/logger"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+    "github.com/prometheus/client_golang/prometheus"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Trace struct {
-	addr string
+    addr string
 
-	prom *prom
+    prom *prom
 
-	log *logger.Logger
+    log *logger.Logger
 }
 
 func NewTrace(addr string, log *logger.Logger) *Trace {
-	t := &Trace{
-		addr: addr,
-	}
+    t := &Trace{
+        addr: addr,
+    }
 
-	http.Handle("/metrics", promhttp.Handler())
+    http.Handle("/metrics", promhttp.Handler())
 
-	t.prom = &prom{
-		path:       "/metrics",
-		collectors: make(map[string]prometheus.Collector),
-		log:        log,
-	}
+    t.prom = &prom{
+        path:       "/metrics",
+        collectors: make(map[string]prometheus.Collector),
+        log:        log,
+    }
 
-	return t
+    return t
 }
 
 func (h *Trace) Serve() {
-	h.log.Errorf("Trace: serve error: %v", http.ListenAndServe(h.addr, nil))
+    err := http.ListenAndServe(h.addr, nil)
+    if err != nil {
+        panic(err)
+    }
 }
 
 func (h *Trace) InitPrometheus(vecs ...PrometheusVec) {
-	h.prom.init(vecs...)
+    h.prom.init(vecs...)
 }
 
 func (h *Trace) GetCounter(name string) *prometheus.CounterVec {
-	return h.prom.getCounter(name)
+    return h.prom.getCounter(name)
 }
 
 func (h *Trace) GetSummary(name string) *prometheus.SummaryVec {
-	return h.prom.getSummary(name)
+    return h.prom.getSummary(name)
 }
 
 func (h *Trace) GetHistogram(name string) *prometheus.HistogramVec {
-	return h.prom.getHistogram(name)
+    return h.prom.getHistogram(name)
 }
 
 func (h *Trace) GetGauge(name string) *prometheus.GaugeVec {
-	return h.prom.getGauge(name)
+    return h.prom.getGauge(name)
 }
