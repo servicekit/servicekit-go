@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -75,7 +76,6 @@ func (r *ConsulResolver) Resolve(target string) (naming.Watcher, error) {
 //
 // An error is returned if and only if the watcher cannot recover.
 func (r *ConsulResolver) Next() ([]*naming.Update, error) {
-	fmt.Println("a")
 	return <-r.updatesc, nil
 }
 
@@ -113,6 +113,7 @@ func (r *ConsulResolver) updater(instances []string, lastIndex uint64) {
 				r.updatesc <- updates
 			}
 			oldInstances = newInstances
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
