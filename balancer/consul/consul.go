@@ -32,7 +32,7 @@ func (b *ConsulBalancer) GetResolver(ctx context.Context) naming.Resolver {
     return b.resolver
 }
 
-func GetResolver(consul coordinator.Coordinator, service, tag string, log *logger.Logger) naming.Resolver {
+func GetResolver(consul coordinator.Coordinator, service, tag string, log *logger.Logger) (naming.Resolver, error) {
     resolver, err := newConsulResolver(consul, service, tag, log)
     if err != nil {
         return nil, err
