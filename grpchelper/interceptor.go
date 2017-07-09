@@ -39,7 +39,7 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
             for i := len(interceptors) - 1; i >= 0; i-- {
                 chain = buildChain(interceptors[i], chain)
             }
-            requestID := HandleRequestIDChain(ctx)
+            requestID := HandleRequestID(ctx)
             ctx = UpdateContextWithRequestID(ctx, requestID)
             return chain(ctx, req)
         }

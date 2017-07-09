@@ -59,7 +59,8 @@ func UpdateContextWithRequestID(ctx context.Context, requestID string) context.C
     if ok {
         md = metadata.Join(_md, md)
     }
-    ctx = metadata.NewIncomingContext(ctx, md)
+
+    ctx = metadata.NewOutgoingContext(ctx, md)
 
     return ctx
 }
