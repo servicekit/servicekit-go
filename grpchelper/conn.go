@@ -3,10 +3,10 @@ package grpchelper
 import (
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials"
-    "google.golang.org/grpc/naming"
 
     balancer "github.com/servicekit/servicekit-go/balancer/consul"
     "github.com/servicekit/servicekit-go/coordinator"
+    "github.com/servicekit/servicekit-go/logger"
 )
 
 func BalanceDial(credPath string, c coordinator.Coordinator, service string, tag string, log *logger.Logger) (*grpc.ClientConn, error) {
