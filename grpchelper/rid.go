@@ -64,3 +64,17 @@ func UpdateContextWithRequestID(ctx context.Context, requestID string) context.C
 
     return ctx
 }
+
+func GetRequestID(ctx context.Context) string {
+    md, ok := metadata.FromContext(ctx)
+    if ok == false {
+        return ""
+    }
+
+    header, ok := md[DefaultXRequestIDKey]
+    if !ok || len(header) == 0 {
+        return ""
+    }
+
+    return header[0]
+}
