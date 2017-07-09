@@ -52,3 +52,14 @@ func HandleRequestIDChain(ctx context.Context) string {
 func newRequestID() string {
     return xid.New().String()
 }
+
+func UpdateContextWithRequestID(ctx context.Context, requestID string) context.Context {
+    md := metadata.New(map[string]string{DefaultXRequestIDKey: requestID})
+    _md, ok := metadata.FromContext(ctx)
+    if ok {
+        md = metadata.Join(_md, md)
+    }
+    ctx = metadata.NewIncomingContext(ctx, md)
+
+    return ctx
+}

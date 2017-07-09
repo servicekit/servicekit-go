@@ -7,7 +7,6 @@ import (
 
     "golang.org/x/net/context"
     "google.golang.org/grpc"
-    "google.golang.org/grpc/metadata"
 
     "github.com/servicekit/servicekit-go/logger"
 )
@@ -41,12 +40,7 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
                 chain = buildChain(interceptors[i], chain)
             }
             requestID := HandleRequestIDChain(ctx)
-            md := metadata.New(map[string]string{DefaultXRequestIDKey: requestID})
-            _md, ok := metadata.FromContext(ctx)
-            if ok {
-                md = metadata.Join(_md, md)
-            }
-            ctx = metadata.NewIncomingContext(ctx, md)
+            ctx = UpdateContextWithRequestID(ctx, requestID)
             return chain(ctx, req)
         }
     }
