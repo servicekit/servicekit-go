@@ -9,8 +9,8 @@ import (
     "github.com/servicekit/servicekit-go/logger"
 )
 
-func BalanceDial(credPath string, c coordinator.Coordinator, service string, tag string, log *logger.Logger) (*grpc.ClientConn, error) {
-    creds, err := credentials.NewClientTLSFromFile(credPath, service)
+func BalanceDial(credPath, credDesc string, c coordinator.Coordinator, service string, tag string, log *logger.Logger) (*grpc.ClientConn, error) {
+    creds, err := credentials.NewClientTLSFromFile(credPath, credDesc)
     if err != nil {
         return nil, err
     }
