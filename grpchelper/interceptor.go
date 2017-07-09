@@ -11,6 +11,8 @@ import (
     "github.com/servicekit/servicekit-go/logger"
 )
 
+type requestIDKey struct{}
+
 func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServerInterceptor {
     switch len(interceptors) {
     case 0:
@@ -21,10 +23,10 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
             return handler(ctx, req)
         }
     case 1:
-        return func(ctx contex.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+        return func(ctx context.Context, req interface{}, unaryServerInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
             requestID := HandleRequestID(ctx)
             ctx = context.WithValue(ctx, requestIDKey{}, requestID)
-            return interceptors[0](ctx, req)
+            return interceptors[0](ctx, req, unaryServerInfo, handler)
         }
     default:
         return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
