@@ -84,7 +84,7 @@ func (g *GRPCService) Start(ctx context.Context, delayRegisterTime time.Duration
     select {
     case err = <-g.errorChan:
     default:
-        err = g.c.Register(ctx, g.getService())
+        err = g.c.Register(ctx, g.getService(), g.TTL)
     }
 
     return err

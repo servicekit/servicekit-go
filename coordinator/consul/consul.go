@@ -94,9 +94,7 @@ func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*s
     return services, meta, nil
 }
 
-func (c *consul) Register(ctx context.Context, serv *spec.Service) error {
-    ttl := serv.TTL
-
+func (c *consul) Register(ctx context.Context, serv *spec.Service, ttl time.Duration) error {
     enableTLS, ok := ctx.Value("enabletls").(bool)
     if ok != true {
         enableTLS = EnableTLS

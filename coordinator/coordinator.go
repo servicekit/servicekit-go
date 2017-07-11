@@ -8,6 +8,6 @@ import (
 
 type Coordinator interface {
     GetServices(ctx context.Context, name string, tag string) ([]*spec.Service, interface{}, error)
-    Register(ctx context.Context, serv *spec.Service) error
+    Register(ctx context.Context, serv *spec.Service, ttl time.Duration) error
     Deregister(ctx context.Context, serviceID string) error
 }
