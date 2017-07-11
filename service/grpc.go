@@ -55,8 +55,8 @@ func NewGRPCService(id string, service string, tags []string, address string, po
     }
 }
 
-func (g *GRPCService) getService() spec.Service {
-    return spec.Service{
+func (g *GRPCService) getService() *spec.Service {
+    return &spec.Service{
         ID:      g.ID,
         Service: g.Service,
         Tags:    g.Tags,
