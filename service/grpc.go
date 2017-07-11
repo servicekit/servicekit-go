@@ -1,7 +1,13 @@
 package service
 
 import (
+    "fmt"
     "time"
+
+    "golang.org/x/net/context"
+
+    "github.com/servicekit/servicekit-go/coordinator"
+    "github.com/servicekit/servicekit-go/logger"
 )
 
 type GRPCServer interface {
