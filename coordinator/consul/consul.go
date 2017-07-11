@@ -113,7 +113,7 @@ func (c *consul) Register(ctx context.Context, serv *spec.Service) error {
         Tags:    serv.Tags,
         Check: &api.AgentServiceCheck{
             TTL:           ttl.String(),
-            TLSSkipVerify: true,
+            TLSSkipVerify: enableTLS,
         },
     }
 

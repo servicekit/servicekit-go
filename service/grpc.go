@@ -8,6 +8,7 @@ import (
 
     "github.com/servicekit/servicekit-go/coordinator"
     "github.com/servicekit/servicekit-go/logger"
+    "github.com/servicekit/servicekit-go/spec"
 )
 
 type GRPCServer interface {
