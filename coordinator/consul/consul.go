@@ -8,7 +8,7 @@ import (
     "golang.org/x/net/context"
 
     "github.com/servicekit/servicekit-go/logger"
-    "github.com/servicekit/servicekit-go/service"
+    "github.com/servicekit/servicekit-go/spec"
     "github.com/servicekit/servicekit-go/version"
 )
 
@@ -47,7 +47,7 @@ func NewConsul(addr, scheme, token string, log *logger.Logger) (*consul, error) 
     }, nil
 }
 
-func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*service.Service, interface{}, error) {
+func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*spec.Service, interface{}, error) {
     var passingOnly bool
     var queryOptions *api.QueryOptions
 
@@ -68,14 +68,14 @@ func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*s
         return nil, nil, err
     }
 
-    services := make([]*service.Service, 0)
+    services := make([]*spec.Service, 0)
 
     for _, serviceEntry := range serviceEntries {
         if checkService(fmt.Sprintf("service:%s", serviceEntry.Service.ID), serviceEntry.Checks) == false {
             continue
         }
 
-        services = append(services, &service.Service{
+        services = append(services, &spec.Service{
             ID:          serviceEntry.Service.ID,
             Service:     serviceEntry.Service.Service,
             Tags:        serviceEntry.Service.Tags,
@@ -94,7 +94,7 @@ func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*s
     return services, meta, nil
 }
 
-func (c *consul) Register(ctx context.Context, serv *service.Service) error {
+func (c *consul) Register(ctx context.Context, serv *spec.Service) error {
     ttl, ok := ctx.Value("ttl").(time.Duration)
     if ok == true {
         ttl = DefaultTTL
