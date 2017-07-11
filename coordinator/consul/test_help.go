@@ -15,7 +15,7 @@ type TestConsul struct {
     DeregisterError     error
 }
 
-func (t *TestConsul) GetServices(ctx context.Context, name string, tag string) ([]*specific.Service, interface{}, error) {
+func (t *TestConsul) GetServices(ctx context.Context, name string, tag string) ([]*spec.Service, interface{}, error) {
     return t.GetServicesServices, t.GetServicesMeta, t.GetServicesError
 }
 

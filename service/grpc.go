@@ -22,6 +22,8 @@ type GRPCService struct {
     Port    int
 
     server GRPCServer
+    pem    string
+    key    string
 
     TTL time.Duration
 
@@ -32,7 +34,7 @@ type GRPCService struct {
     errorChan chan error
 }
 
-func NewGRPCService(id string, service string, tags []string, address string, port int, server GRPCServer, ttl time.Duration, c coordinator.Coordinator, log *logger.Logger) *GRPCService {
+func NewGRPCService(id string, service string, tags []string, address string, port int, server GRPCServer, pem, key string, ttl time.Duration, c coordinator.Coordinator, log *logger.Logger) *GRPCService {
     return &GRPCService{
         ID:      id,
         Service: service,
@@ -41,12 +43,24 @@ func NewGRPCService(id string, service string, tags []string, address string, po
         Port:    port,
 
         server: server,
+        pem:    pem,
+        key:    key,
 
         TTL: ttl,
         c:   c,
         log: log,
 
         errorChan: make(chan error),
+    }
+}
+
+func (g *GRPCService) getService() spec.Service {
+    return spec.Service{
+        ID:      g.ID,
+        Service: g.Service,
+        Tags:    g.Tags,
+        Address: g.Address,
+        Port:    g.Port,
     }
 }
 
@@ -69,7 +83,7 @@ func (g *GRPCService) Start(ctx context.Context, delayRegisterTime time.Duration
     select {
     case err = <-g.errorChan:
     default:
-        err = c.Register(ctx, s)
+        err = g.c.Register(ctx, g.getService())
     }
 
     return err
