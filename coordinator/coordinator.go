@@ -1,6 +1,8 @@
 package coordinator
 
 import (
+    "time"
+
     "golang.org/x/net/context"
 
     "github.com/servicekit/servicekit-go/spec"
