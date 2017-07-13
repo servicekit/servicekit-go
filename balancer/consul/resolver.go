@@ -105,7 +105,8 @@ func (r *ConsulResolver) updater(instances []string, lastIndex uint64) {
 		default:
 			newInstances, lastIndex, err = r.getInstances(lastIndex)
 			if err != nil {
-				r.log.Infof("grpc/lb: error retrieving instances from Consul: %v", err)
+				r.log.Debugf("grpc/lb: error retrieving instances from Consul: %v", err)
+				time.Sleep(1 * time.Second)
 				continue
 			}
 			updates := r.makeUpdates(oldInstances, newInstances)
