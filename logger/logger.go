@@ -9,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
+	"golang.org/x/net/context"
 
 	"github.com/servicekit/servicekit-go/config"
 )
