@@ -61,7 +61,7 @@ func UpdateContextWithRequestID(ctx context.Context, requestID string) context.C
 	}
 
 	ctx = metadata.NewContext(ctx, md)
-	ctx.Value(RequestIDKey, requestID)
+	ctx = context.WithValue(ctx, RequestIDKey, requestID)
 	return ctx
 }
 
