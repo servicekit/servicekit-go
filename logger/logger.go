@@ -11,7 +11,6 @@ import (
 	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
 
 	"github.com/servicekit/servicekit-go/config"
-	"github.com/servicekit/servicekit-go/grpchelper"
 )
 
 const (
