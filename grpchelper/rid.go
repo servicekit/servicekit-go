@@ -8,8 +8,8 @@ import (
     "google.golang.org/grpc/metadata"
 )
 
-// DefaultXRequestIDKey is metadata key name for request ID
-var DefaultXRequestIDKey = "x-request-id"
+// RequestIDKey is metadata key name for request ID
+var RequestIDKey = "request-id"
 
 func HandleRequestID(ctx context.Context) string {
     md, ok := metadata.FromContext(ctx)
@@ -17,7 +17,7 @@ func HandleRequestID(ctx context.Context) string {
         return newRequestID()
     }
 
-    header, ok := md[DefaultXRequestIDKey]
+    header, ok := md[RequestIDKey]
     if !ok || len(header) == 0 {
         return newRequestID()
     }
@@ -36,7 +36,7 @@ func HandleRequestIDChain(ctx context.Context) string {
         return newRequestID()
     }
 
-    header, ok := md[DefaultXRequestIDKey]
+    header, ok := md[RequestIDKey]
     if !ok || len(header) == 0 {
         return newRequestID()
     }
@@ -54,7 +54,7 @@ func newRequestID() string {
 }
 
 func UpdateContextWithRequestID(ctx context.Context, requestID string) context.Context {
-    md := metadata.New(map[string]string{DefaultXRequestIDKey: requestID})
+    md := metadata.New(map[string]string{RequestIDKey: requestID})
     _md, ok := metadata.FromContext(ctx)
     if ok {
         md = metadata.Join(_md, md)
@@ -71,7 +71,7 @@ func GetRequestID(ctx context.Context) string {
         return ""
     }
 
-    header, ok := md[DefaultXRequestIDKey]
+    header, ok := md[RequestIDKey]
     if !ok || len(header) == 0 {
         return ""
     }
