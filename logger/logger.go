@@ -12,10 +12,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/servicekit/servicekit-go/config"
-)
-
-const (
-	RequestIDKey = "request-id"
+	"github.com/servicekit/servicekit-go/requestid"
 )
 
 func insert(slice []interface{}, insertion interface{}) []interface{} {
@@ -144,7 +141,7 @@ func (logger *Logger) DebugfWithReqID(ctx context.Context, format string, args .
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Debugf(f, args...)
@@ -155,7 +152,7 @@ func (logger *Logger) InfofWithReqID(ctx context.Context, format string, args ..
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Infof(f, args...)
@@ -166,7 +163,7 @@ func (logger *Logger) PrintfWithReqID(ctx context.Context, format string, args .
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Printf(f, args...)
@@ -177,7 +174,7 @@ func (logger *Logger) WarnfWithReqID(ctx context.Context, format string, args ..
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Warnf(f, args...)
@@ -188,7 +185,7 @@ func (logger *Logger) ErrorfWithReqID(ctx context.Context, format string, args .
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Errorf(f, args...)
@@ -199,7 +196,7 @@ func (logger *Logger) FatalfWithReqID(ctx context.Context, format string, args .
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Fatalf(f, args...)
@@ -210,7 +207,7 @@ func (logger *Logger) PanicfWithReqID(ctx context.Context, format string, args .
 
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(RequestIDKey))
+		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
 	}
 
 	logger.logger.Panicf(f, args...)
