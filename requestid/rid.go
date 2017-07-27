@@ -2,6 +2,7 @@ package requestid
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/rs/xid"
 	"golang.org/x/net/context"
