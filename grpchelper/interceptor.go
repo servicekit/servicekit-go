@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/servicekit/servicekit-go/logger"
+	"github.com/servicekit/servicekit-go/requestid"
 )
 
 type requestIDKey struct{}
@@ -18,13 +19,13 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
 	case 0:
 		// do not want to return nil interceptor since this function was never defined to do so/for backwards compatibility
 		return func(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-			requestID := HandleRequestIDChain(ctx)
+			requestID := requestid.HandleRequestIDChain(ctx)
 			ctx = context.WithValue(ctx, requestIDKey{}, requestID)
 			return handler(ctx, req)
 		}
 	case 1:
 		return func(ctx context.Context, req interface{}, unaryServerInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-			requestID := HandleRequestIDChain(ctx)
+			requestID := requestid.HandleRequestIDChain(ctx)
 			ctx = context.WithValue(ctx, requestIDKey{}, requestID)
 			return interceptors[0](ctx, req, unaryServerInfo, handler)
 		}
@@ -39,8 +40,8 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
 			for i := len(interceptors) - 1; i >= 0; i-- {
 				chain = buildChain(interceptors[i], chain)
 			}
-			requestID := HandleRequestIDChain(ctx)
-			ctx = UpdateContextWithRequestID(ctx, requestID)
+			requestID := requestid.HandleRequestIDChain(ctx)
+			ctx = requestid.UpdateContextWithRequestID(ctx, requestID)
 			return chain(ctx, req)
 		}
 	}

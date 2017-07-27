@@ -1,4 +1,4 @@
-package grpchelper
+package requestid
 
 import (
 	"fmt"
@@ -77,4 +77,14 @@ func GetRequestID(ctx context.Context) string {
 	}
 
 	return header[0]
+}
+
+func GetRequestIDFromHTTPRequest(ctx context.Context, r *http.Request) (context.Context, string) {
+	requestID := r.Header.Get(RequestIDKey)
+	if requestID == "" {
+		requestID = HandleRequestID(ctx)
+	}
+
+	ctx = context.WithValue(ctx, RequestIDKey, requestID)
+	return ctx, requestID
 }
