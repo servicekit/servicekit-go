@@ -43,12 +43,6 @@ func NewLogger(serviceName, serviceVersion string, serviceENV config.ServiceENV,
 
     logger.logger.Hooks.Add(hook)
 
-    hook, err = logstash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "myappName"}))
-    if err != nil {
-        return nil, err
-    }
-    logger.logger.Hooks.Add(hook)
-
     return logger, nil
 }
 
