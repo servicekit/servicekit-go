@@ -51,6 +51,25 @@ func (p *PrometheusGauge) GetCollector() prometheus.Collector {
 	return prometheus.NewGaugeVec(opts, p.Labels)
 }
 
+type PrometheusHistogram struct {
+	Name   string
+	Help   string
+	Labels []string
+}
+
+func (p *PrometheusHistogram) GetName() string {
+	return p.Name
+}
+
+func (p *PrometheusHistogram) GetCollector() prometheus.Collector {
+	opts := prometheus.HistogramOpts{
+		Name: p.Name,
+		Help: p.Help,
+	}
+
+	return prometheus.NewHistogramVec(opts, p.Labels)
+}
+
 type prom struct {
 	path       string
 	collectors map[string]prometheus.Collector
