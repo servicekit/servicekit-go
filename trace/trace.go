@@ -1,61 +1,77 @@
 package trace
 
 import (
-    "net/http"
+	"fmt"
+	"net/http"
 
-    "github.com/servicekit/servicekit-go/logger"
+	"github.com/servicekit/servicekit-go/coordinator"
+	"github.com/servicekit/servicekit-go/logger"
+	"github.com/servicekit/servicekit-go/spec"
 
-    "github.com/prometheus/client_golang/prometheus"
-    "github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Trace struct {
-    addr string
+	addr string
 
-    prom *prom
+	prom *prom
 
-    log *logger.Logger
+	log *logger.Logger
 }
 
-func NewTrace(addr string, log *logger.Logger) *Trace {
-    t := &Trace{
-        addr: addr,
-    }
+func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, host string, port int, ttl time.Duration, log *logger.Logger) *Trace {
+	t := &Trace{
+		addr: fmt.Sprintf("%s:%d", host, port),
+	}
 
-    http.Handle("/metrics", promhttp.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 
-    t.prom = &prom{
-        path:       "/metrics",
-        collectors: make(map[string]prometheus.Collector),
-        log:        log,
-    }
+	t.prom = &prom{
+		path:       "/metrics",
+		collectors: make(map[string]prometheus.Collector),
+		log:        log,
+	}
 
-    return t
+	s := &spec.Service{
+		ID:      id,
+		Service: name,
+		Tags:    tags,
+		Address: host,
+		Port:    port,
+	}
+
+	err = c.Register(ctx, s, ttl)
+	if err != nil {
+		return nil, err
+	}
+
+	return t, nil
 }
 
 func (h *Trace) Serve() {
-    err := http.ListenAndServe(h.addr, nil)
-    if err != nil {
-        panic(err)
-    }
+	err := http.ListenAndServe(h.addr, nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (h *Trace) InitPrometheus(vecs ...PrometheusVec) {
-    h.prom.init(vecs...)
+	h.prom.init(vecs...)
 }
 
 func (h *Trace) GetCounter(name string) *prometheus.CounterVec {
-    return h.prom.getCounter(name)
+	return h.prom.getCounter(name)
 }
 
 func (h *Trace) GetSummary(name string) *prometheus.SummaryVec {
-    return h.prom.getSummary(name)
+	return h.prom.getSummary(name)
 }
 
 func (h *Trace) GetHistogram(name string) *prometheus.HistogramVec {
-    return h.prom.getHistogram(name)
+	return h.prom.getHistogram(name)
 }
 
 func (h *Trace) GetGauge(name string) *prometheus.GaugeVec {
-    return h.prom.getGauge(name)
+	return h.prom.getGauge(name)
 }
