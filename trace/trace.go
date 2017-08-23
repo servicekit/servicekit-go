@@ -3,6 +3,9 @@ package trace
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"golang.org/x/net/context"
 
 	"github.com/servicekit/servicekit-go/coordinator"
 	"github.com/servicekit/servicekit-go/logger"
@@ -20,7 +23,7 @@ type Trace struct {
 	log *logger.Logger
 }
 
-func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, host string, port int, ttl time.Duration, log *logger.Logger) *Trace {
+func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, host string, port int, ttl time.Duration, log *logger.Logger) (*Trace, error) {
 	t := &Trace{
 		addr: fmt.Sprintf("%s:%d", host, port),
 	}
@@ -41,7 +44,7 @@ func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, 
 		Port:    port,
 	}
 
-	err = c.Register(ctx, s, ttl)
+	err := c.Register(context.Background(), s, ttl)
 	if err != nil {
 		return nil, err
 	}
