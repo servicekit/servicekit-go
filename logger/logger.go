@@ -354,9 +354,5 @@ func (logger *Logger) WithFields(fields map[string]interface{}) *log.Entry {
 		f[k] = v
 	}
 
-	if logger.Active == true {
-		return logger.logger.WithFields(fields)
-	}
-
-	return logger
+	return logger.logger.WithFields(fields)
 }
