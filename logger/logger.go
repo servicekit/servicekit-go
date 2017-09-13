@@ -353,5 +353,10 @@ func (logger *Logger) WithFields(fields map[string]interface{}) *log.Entry {
 	for k, v := range fields {
 		f[k] = v
 	}
-	return logger.logger.WithFields(fields)
+
+	if logger.Active == true {
+		return logger.logger.WithFields(fields)
+	}
+
+	return logger
 }
