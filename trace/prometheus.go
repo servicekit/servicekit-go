@@ -8,21 +8,27 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// PrometheusVec defin a prometheus vector that have two method:
+// GetName returns a vector name
+// GetCollector return a prometheus.Collector
 type PrometheusVec interface {
 	GetName() string
 	GetCollector() prometheus.Collector
 }
 
+// PrometheusCounter is a PrometheusVec that collect counter vector
 type PrometheusCounter struct {
 	Name   string
 	Help   string
 	Labels []string
 }
 
+// GetName return a count vector name
 func (p *PrometheusCounter) GetName() string {
 	return p.Name
 }
 
+// GetCollector return a collector with a counter options
 func (p *PrometheusCounter) GetCollector() prometheus.Collector {
 	opts := prometheus.CounterOpts{
 		Name: p.Name,
@@ -32,16 +38,19 @@ func (p *PrometheusCounter) GetCollector() prometheus.Collector {
 	return prometheus.NewCounterVec(opts, p.Labels)
 }
 
+// PrometheusGauge is a PrometheusVec that collect gauge vector
 type PrometheusGauge struct {
 	Name   string
 	Help   string
 	Labels []string
 }
 
+// GetName returns a gauge vector name
 func (p *PrometheusGauge) GetName() string {
 	return p.Name
 }
 
+// GetCollector returns a collector with a gauge options
 func (p *PrometheusGauge) GetCollector() prometheus.Collector {
 	opts := prometheus.GaugeOpts{
 		Name: p.Name,
@@ -51,16 +60,19 @@ func (p *PrometheusGauge) GetCollector() prometheus.Collector {
 	return prometheus.NewGaugeVec(opts, p.Labels)
 }
 
+// PrometheusHistogram is a PrometheusVec that collect histogram vector
 type PrometheusHistogram struct {
 	Name   string
 	Help   string
 	Labels []string
 }
 
+// GetName returns a histogram vector name
 func (p *PrometheusHistogram) GetName() string {
 	return p.Name
 }
 
+// GetCollector returns a collector with a histogram options
 func (p *PrometheusHistogram) GetCollector() prometheus.Collector {
 	opts := prometheus.HistogramOpts{
 		Name: p.Name,

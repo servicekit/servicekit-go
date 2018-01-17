@@ -15,6 +15,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// Trace can init a Prometheus handler for provider Prometheus vectors
 type Trace struct {
 	addr string
 
@@ -23,6 +24,9 @@ type Trace struct {
 	log *logger.Logger
 }
 
+// NewTrace returns a trace
+// Serve a http server that provider a http interface for push metrics
+// Register itself to the coordinator
 func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, host string, port int, ttl time.Duration, log *logger.Logger) (*Trace, error) {
 	t := &Trace{
 		addr: fmt.Sprintf("%s:%d", host, port),
@@ -52,6 +56,7 @@ func NewTrace(c coordinator.Coordinator, id string, name string, tags []string, 
 	return t, nil
 }
 
+// Serve serve a http server
 func (h *Trace) Serve() {
 	err := http.ListenAndServe(h.addr, nil)
 	if err != nil {
@@ -59,22 +64,27 @@ func (h *Trace) Serve() {
 	}
 }
 
+// InitPrometheus init a prometheus handler
 func (h *Trace) InitPrometheus(vecs ...PrometheusVec) {
 	h.prom.init(vecs...)
 }
 
+// GetCounter returns a prometheus count vector
 func (h *Trace) GetCounter(name string) *prometheus.CounterVec {
 	return h.prom.getCounter(name)
 }
 
+// GetSummary returns a prometheus summary vector
 func (h *Trace) GetSummary(name string) *prometheus.SummaryVec {
 	return h.prom.getSummary(name)
 }
 
+// GetHistogram returns a prometheus histogram vector
 func (h *Trace) GetHistogram(name string) *prometheus.HistogramVec {
 	return h.prom.getHistogram(name)
 }
 
+// GetGauge returns a prometheus gauge vector
 func (h *Trace) GetGauge(name string) *prometheus.GaugeVec {
 	return h.prom.getGauge(name)
 }

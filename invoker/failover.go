@@ -9,17 +9,22 @@ import (
 )
 
 const (
-	MaxTries   = 8
+	// MaxTries represents the max count for retry
+	MaxTries = 8
+	// MaxTimeout represents the timeout seconds
 	MaxTimeout = 8 * time.Second
-	MaxDelay   = 8 * time.Minute
+	// MaxDelay represents the delay seconds
+	MaxDelay = 8 * time.Minute
 )
 
+// FailoverInvoker can be retry when invoke failed
 type FailoverInvoker struct {
 	tries   int
 	timeout time.Duration
 	delay   Delay
 }
 
+// NewFailoverInvoker returns an Invoker
 func NewFailoverInvoker(tries int, timeout time.Duration, delay Delay) Invoker {
 	if tries > MaxTries {
 		tries = MaxTries
@@ -36,6 +41,7 @@ func NewFailoverInvoker(tries int, timeout time.Duration, delay Delay) Invoker {
 	}
 }
 
+// Invoke method invoke grpc.Invoke that can be retry when invoke failed
 func (f *FailoverInvoker) Invoke(ctx context.Context, conn *grpc.ClientConn, method string, request, response interface{}, opts ...grpc.CallOption) error {
 	var err error
 

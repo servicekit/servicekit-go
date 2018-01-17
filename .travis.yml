@@ -5,4 +5,4 @@ go:
   - tip
 
 script:
-  - go test github.com/servicekit/servicekit-go/...
+  - make ci

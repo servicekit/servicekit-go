@@ -14,11 +14,17 @@ import (
 	"google.golang.org/grpc/naming"
 )
 
-// ConsulResolver implements the gRPC Resolver interface using a Consul backend.
+type contextKey string
+
+func (c contextKey) String() string {
+	return "mypackage context key " + string(c)
+}
+
+// Resolver implements the gRPC Resolver interface using a Consul backend.
 //
 // See the gRPC load balancing documentation for details about Balancer and
 // Resolver: https://github.com/grpc/grpc/blob/master/doc/load-balancing.md.
-type ConsulResolver struct {
+type Resolver struct {
 	consul      coordinator.Coordinator
 	service     string
 	tag         string
@@ -30,12 +36,12 @@ type ConsulResolver struct {
 	log *logger.Logger
 }
 
-// NewConsulResolver initializes and returns a new ConsulResolver.
+// NewResolver initializes and returns a new Resolver.
 //
 // It resolves addresses for gRPC connections to the given service and tag.
 // If the tag is irrelevant, use an empty string.
-func newConsulResolver(consul coordinator.Coordinator, service, tag string, log *logger.Logger) (*ConsulResolver, error) {
-	r := &ConsulResolver{
+func newResolver(consul coordinator.Coordinator, service, tag string, log *logger.Logger) (*Resolver, error) {
+	r := &Resolver{
 		consul:      consul,
 		service:     service,
 		tag:         tag,
@@ -49,7 +55,7 @@ func newConsulResolver(consul coordinator.Coordinator, service, tag string, log 
 	// Retrieve instances immediately
 	instances, index, err := r.getInstances(0)
 	if err != nil {
-		r.log.Warnf("ConsulResolver: error retrieving instances from Consul: %v", err)
+		r.log.Warnf("Resolver: error retrieving instances from Consul: %v", err)
 	}
 	fmt.Println(instances)
 	updates := r.makeUpdates(nil, instances)
@@ -64,8 +70,8 @@ func newConsulResolver(consul coordinator.Coordinator, service, tag string, log 
 }
 
 // Resolve creates a watcher for target. The watcher interface is implemented
-// by ConsulResolver as well, see Next and Close.
-func (r *ConsulResolver) Resolve(target string) (naming.Watcher, error) {
+// by Resolver as well, see Next and Close.
+func (r *Resolver) Resolve(target string) (naming.Watcher, error) {
 	return r, nil
 }
 
@@ -75,12 +81,12 @@ func (r *ConsulResolver) Resolve(target string) (naming.Watcher, error) {
 // block until the resolver finds any new or removed instance.
 //
 // An error is returned if and only if the watcher cannot recover.
-func (r *ConsulResolver) Next() ([]*naming.Update, error) {
+func (r *Resolver) Next() ([]*naming.Update, error) {
 	return <-r.updatesc, nil
 }
 
 // Close closes the watcher.
-func (r *ConsulResolver) Close() {
+func (r *Resolver) Close() {
 	select {
 	case <-r.quitc:
 	default:
@@ -89,10 +95,10 @@ func (r *ConsulResolver) Close() {
 	}
 }
 
-// updater is a background process started in NewConsulResolver. It takes
+// updater is a background process started in NewResolver. It takes
 // a list of previously resolved instances (in the format of host:port, e.g.
 // 192.168.0.1:1234) and the last index returned from Consul.
-func (r *ConsulResolver) updater(instances []string, lastIndex uint64) {
+func (r *Resolver) updater(instances []string, lastIndex uint64) {
 	var err error
 	var oldInstances = instances
 	var newInstances []string
@@ -121,10 +127,11 @@ func (r *ConsulResolver) updater(instances []string, lastIndex uint64) {
 
 // getInstances retrieves the new set of instances registered for the
 // service from Consul.
-func (r *ConsulResolver) getInstances(lastIndex uint64) ([]string, uint64, error) {
+func (r *Resolver) getInstances(lastIndex uint64) ([]string, uint64, error) {
 	ctx := context.Background()
-	context.WithValue(ctx, "passingOnly", true)
-	context.WithValue(ctx, "queryOptions", &api.QueryOptions{
+
+	context.WithValue(ctx, contextKey("passingOnly"), true)
+	context.WithValue(ctx, contextKey("queryOptions"), &api.QueryOptions{
 		WaitIndex: lastIndex,
 	})
 	services, meta, err := r.consul.GetServices(ctx, r.service, r.tag)
@@ -151,7 +158,7 @@ func (r *ConsulResolver) getInstances(lastIndex uint64) ([]string, uint64, error
 
 // makeUpdates calculates the difference between and old and a new set of
 // instances and turns it into an array of naming.Updates.
-func (r *ConsulResolver) makeUpdates(oldInstances, newInstances []string) []*naming.Update {
+func (r *Resolver) makeUpdates(oldInstances, newInstances []string) []*naming.Update {
 	oldAddr := make(map[string]struct{}, len(oldInstances))
 	for _, instance := range oldInstances {
 		oldAddr[instance] = struct{}{}

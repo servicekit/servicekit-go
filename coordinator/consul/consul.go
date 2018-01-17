@@ -13,16 +13,20 @@ import (
 )
 
 const (
+	// DefaultTTL use to describe consul update period
 	DefaultTTL = time.Minute
-	EnableTLS  = true
+	// EnableTLS use to enable TSL
+	EnableTLS = true
 )
 
-type consul struct {
+// Consul is an implementation of coodinator
+type Consul struct {
 	c *api.Client
 
 	log *logger.Logger
 }
 
+// checkService returns true when service is available
 func checkService(checkID string, checks []*api.HealthCheck) bool {
 	for _, c := range checks {
 		if c.CheckID == checkID && c.Status == api.HealthPassing {
@@ -33,21 +37,23 @@ func checkService(checkID string, checks []*api.HealthCheck) bool {
 	return false
 }
 
-func NewConsul(addr, scheme, token string, log *logger.Logger) (*consul, error) {
+// NewConsul returns a Consul
+func NewConsul(addr, scheme, token string, log *logger.Logger) (*Consul, error) {
 	// create a reusable client
 	c, err := api.NewClient(&api.Config{Address: addr, Scheme: scheme, Token: token})
 	if err != nil {
 		return nil, err
 	}
 
-	return &consul{
+	return &Consul{
 		c: c,
 
 		log: log,
 	}, nil
 }
 
-func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*spec.Service, interface{}, error) {
+// GetServices returns all service by context, name and tag
+func (c *Consul) GetServices(ctx context.Context, name string, tag string) ([]*spec.Service, interface{}, error) {
 	var passingOnly bool
 	var queryOptions *api.QueryOptions
 
@@ -94,7 +100,8 @@ func (c *consul) GetServices(ctx context.Context, name string, tag string) ([]*s
 	return services, meta, nil
 }
 
-func (c *consul) Register(ctx context.Context, serv *spec.Service, ttl time.Duration) error {
+// Register register a new service
+func (c *Consul) Register(ctx context.Context, serv *spec.Service, ttl time.Duration) error {
 	enableTLS, ok := ctx.Value("enabletls").(bool)
 	if ok != true {
 		enableTLS = EnableTLS
@@ -114,26 +121,27 @@ func (c *consul) Register(ctx context.Context, serv *spec.Service, ttl time.Dura
 
 	if err := c.c.Agent().ServiceRegister(service); err != nil {
 		return err
-	} else {
-		go func(ctx context.Context) {
-			c.log.Infof("consul: service: %s update ttl started", serv.ID)
-			for {
-				select {
-				case <-ctx.Done():
-					c.log.Infof("consul: service: %s update ttl stopped", serv.ID)
-					return
-				default:
-					c.log.Debugf("consul: service: %s updated ttl ", serv.ID)
-					c.c.Agent().UpdateTTL(fmt.Sprintf("service:%s", serv.ID), "", api.HealthPassing)
-					time.Sleep(ttl/2 - 1)
-				}
-			}
-		}(ctx)
 	}
+
+	go func(ctx context.Context) {
+		c.log.Infof("consul: service: %s update ttl started", serv.ID)
+		for {
+			select {
+			case <-ctx.Done():
+				c.log.Infof("consul: service: %s update ttl stopped", serv.ID)
+				return
+			default:
+				c.log.Debugf("consul: service: %s updated ttl ", serv.ID)
+				c.c.Agent().UpdateTTL(fmt.Sprintf("service:%s", serv.ID), "", api.HealthPassing)
+				time.Sleep(ttl/2 - 1)
+			}
+		}
+	}(ctx)
 
 	return nil
 }
 
-func (c *consul) Deregister(ctx context.Context, serviceID string) error {
+// Deregister deregister a service
+func (c *Consul) Deregister(ctx context.Context, serviceID string) error {
 	return c.c.Agent().ServiceDeregister(serviceID)
 }

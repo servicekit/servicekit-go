@@ -14,6 +14,7 @@ import (
 
 type requestIDKey struct{}
 
+// UnaryServerChan returns a UnaryServerInterceptor
 func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServerInterceptor {
 	switch len(interceptors) {
 	case 0:
@@ -47,17 +48,20 @@ func UnaryServerChan(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServ
 	}
 }
 
-type commonUnaryServerInterceptor struct {
+// CommonUnaryServerInterceptor describe a server interceptor
+type CommonUnaryServerInterceptor struct {
 	log *logger.Logger
 }
 
-func NewCommonUnaryServerInterceptor(log *logger.Logger) *commonUnaryServerInterceptor {
-	return &commonUnaryServerInterceptor{
+// NewCommonUnaryServerInterceptor returns a CommonUnaryServerInterceptor
+func NewCommonUnaryServerInterceptor(log *logger.Logger) *CommonUnaryServerInterceptor {
+	return &CommonUnaryServerInterceptor{
 		log: log,
 	}
 }
 
-func (i *commonUnaryServerInterceptor) RecoverInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+// RecoverInterceptor can recover a panic
+func (i *CommonUnaryServerInterceptor) RecoverInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			stack := make([]byte, 1024*8)
@@ -69,7 +73,8 @@ func (i *commonUnaryServerInterceptor) RecoverInterceptor(ctx context.Context, r
 	return handler(ctx, req)
 }
 
-func (i *commonUnaryServerInterceptor) TraceInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+// TraceInterceptor trace common info
+func (i *CommonUnaryServerInterceptor) TraceInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	startTime := time.Now()
 
 	rid := reflect.ValueOf(req).Elem().FieldByName("RequestID")

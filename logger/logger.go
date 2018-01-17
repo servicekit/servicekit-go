@@ -7,10 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
-	"golang.org/x/net/context"
 
 	"github.com/servicekit/servicekit-go/config"
-	"github.com/servicekit/servicekit-go/requestid"
 )
 
 func insert(slice []interface{}, insertion interface{}) []interface{} {
@@ -20,11 +18,13 @@ func insert(slice []interface{}, insertion interface{}) []interface{} {
 	return result
 }
 
+// Logger is a abstraction base on log.Logger
 type Logger struct {
 	logger *log.Logger
 	Active bool
 }
 
+// NewLogger returns a Logger
 func NewLogger(serviceName, serviceVersion string, serviceENV config.ServiceENV, network, addr string, priority syslog.Priority) (*Logger, error) {
 	logger := &Logger{Active: true}
 	logger.logger = log.New()
@@ -47,6 +47,7 @@ func NewLogger(serviceName, serviceVersion string, serviceENV config.ServiceENV,
 	return logger, nil
 }
 
+// Debugf will invoke logrus.Debugf
 func (logger *Logger) Debugf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -62,6 +63,7 @@ func (logger *Logger) Debugf(format string, args ...interface{}) {
 	logger.logger.Debugf(f, args...)
 }
 
+// Infof will invoke logrus.Infof
 func (logger *Logger) Infof(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -77,6 +79,7 @@ func (logger *Logger) Infof(format string, args ...interface{}) {
 	logger.logger.Infof(f, args...)
 }
 
+// Printf will invoke logrus.Printf
 func (logger *Logger) Printf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -92,6 +95,7 @@ func (logger *Logger) Printf(format string, args ...interface{}) {
 	logger.logger.Printf(f, args...)
 }
 
+// Warnf will invoke logrus.Warnf
 func (logger *Logger) Warnf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -107,6 +111,7 @@ func (logger *Logger) Warnf(format string, args ...interface{}) {
 	logger.logger.Warnf(f, args...)
 }
 
+// Errorf will invoke logrus.Warnf
 func (logger *Logger) Errorf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -122,6 +127,7 @@ func (logger *Logger) Errorf(format string, args ...interface{}) {
 	logger.logger.Errorf(f, args...)
 }
 
+// Fatalf will invoke logrus.Fatalf
 func (logger *Logger) Fatalf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -137,6 +143,7 @@ func (logger *Logger) Fatalf(format string, args ...interface{}) {
 	logger.logger.Fatalf(f, args...)
 }
 
+// Panicf will invoke logrus.Panicf
 func (logger *Logger) Panicf(format string, args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -152,111 +159,7 @@ func (logger *Logger) Panicf(format string, args ...interface{}) {
 	logger.logger.Panicf(f, args...)
 }
 
-func (logger *Logger) DebugfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Debugf(f, args...)
-}
-
-func (logger *Logger) InfofWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Infof(f, args...)
-}
-
-func (logger *Logger) PrintfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Printf(f, args...)
-}
-
-func (logger *Logger) WarnfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Warnf(f, args...)
-}
-
-func (logger *Logger) ErrorfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Errorf(f, args...)
-}
-
-func (logger *Logger) FatalfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Fatalf(f, args...)
-}
-
-func (logger *Logger) PanicfWithReqID(ctx context.Context, format string, args ...interface{}) {
-	if logger.Active == false {
-		return
-	}
-
-	f := format
-
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		f = fmt.Sprintf("%s:%d %s reqid: %v", file, line, format, ctx.Value(requestid.RequestIDKey))
-	}
-
-	logger.logger.Panicf(f, args...)
-}
-
+// Debug will invoke logrus.Debug
 func (logger *Logger) Debug(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -270,6 +173,7 @@ func (logger *Logger) Debug(args ...interface{}) {
 	logger.logger.Debug(args...)
 }
 
+// Info will invoke logrus.Info
 func (logger *Logger) Info(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -283,6 +187,7 @@ func (logger *Logger) Info(args ...interface{}) {
 	logger.logger.Info(args...)
 }
 
+// Print will invoke logrus.Print
 func (logger *Logger) Print(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -296,6 +201,7 @@ func (logger *Logger) Print(args ...interface{}) {
 	logger.logger.Print(args...)
 }
 
+// Warn will invoke logrus.Warn
 func (logger *Logger) Warn(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -309,6 +215,7 @@ func (logger *Logger) Warn(args ...interface{}) {
 	logger.logger.Warn(args...)
 }
 
+// Error will invoke logrus.Error
 func (logger *Logger) Error(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -322,6 +229,7 @@ func (logger *Logger) Error(args ...interface{}) {
 	logger.logger.Error(args...)
 }
 
+// Fatal will invoke logrus.Fatal
 func (logger *Logger) Fatal(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -335,6 +243,7 @@ func (logger *Logger) Fatal(args ...interface{}) {
 	logger.logger.Fatal(args...)
 }
 
+// Panic will invoke logrus.Panic
 func (logger *Logger) Panic(args ...interface{}) {
 	if logger.Active == false {
 		return
@@ -348,6 +257,7 @@ func (logger *Logger) Panic(args ...interface{}) {
 	logger.logger.Panic(args...)
 }
 
+// WithFields returns an Entry with fields
 func (logger *Logger) WithFields(fields map[string]interface{}) *log.Entry {
 	f := make(log.Fields)
 	for k, v := range fields {
