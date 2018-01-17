@@ -19,6 +19,8 @@ ci:
 	@docker build ${docker_build_args} -t servicekit-go-make .
 	@docker run servicekit-go-make _ci
 
+travis: _ci
+
 fmt:
 	@go fmt $$(go list ./...|grep -v vendor)
 
