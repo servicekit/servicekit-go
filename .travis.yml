@@ -13,3 +13,5 @@ script:
   - govendor init
   - govendor fetch +o -v
   - go test `go list ./...|grep -v vendor`
+  - golint `go list ./...|grep -v vendor`
+  - govet `go list ./...|grep -v vendor`
