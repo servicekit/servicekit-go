@@ -7,6 +7,9 @@ go:
 
 before_install:
   - go get -v github.com/golang/lint/golint
+  - go get -u github.com/kardianos/govendor
 
 script:
-  - make travis
+  - govendor init
+  - govendor fetch +o -v
+  - go test `go list ./...|grep -v vendor`
