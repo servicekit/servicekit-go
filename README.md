@@ -1,5 +1,6 @@
 # servicekit for golang
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/servicekit/servicekit-go)](https://goreportcard.com/report/github.com/servicekit/servicekit-go)
 [![Travis CI Status](https://travis-ci.org/servicekit/servicekit-go.svg?branch=master)](https://travis-ci.org/servicekit/servicekit-go)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/servicekit/servicekit-go/master/LICENSE)
 
