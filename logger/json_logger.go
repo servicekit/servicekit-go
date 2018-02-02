@@ -13,13 +13,13 @@ func (w *NullWriter) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-// JsonLogger is a logger JSON formatter wrap
-type JsonLogger struct {
+// JSONLogger is a logger JSON formatter wrap
+type JSONLogger struct {
 	logger *log.Logger
 }
 
-// NewJsonLogger returns a JsonLogger
-func NewJsonLogger(hidden bool) *JsonLogger {
+// NewJSONLogger returns a JsonLogger
+func NewJSONLogger(hidden bool) *JSONLogger {
 	logger := &Logger{}
 	logger.logger = log.New()
 
@@ -39,7 +39,7 @@ func NewJsonLogger(hidden bool) *JsonLogger {
 }
 
 // WithFields returns a log entry
-func (logger *JsonLogger) WithFields(fields map[string]interface{}) *log.Entry {
+func (logger *JSONLogger) WithFields(fields map[string]interface{}) *log.Entry {
 	f := make(log.Fields)
 	for k, v := range fields {
 		f[k] = v
