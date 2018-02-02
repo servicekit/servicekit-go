@@ -20,7 +20,7 @@ type JSONLogger struct {
 
 // NewJSONLogger returns a JsonLogger
 func NewJSONLogger(hidden bool) *JSONLogger {
-	logger := &Logger{}
+	logger := &JSONLogger{}
 	logger.logger = log.New()
 
 	if hidden == true {
